@@ -26,7 +26,26 @@ def find_smallest_positive(xs):
     >>> find_smallest_positive([-3, -2, -1]) is None
     True
     '''
-
+    left = 0
+    right = len(xs) - 1
+    if len(xs) == 0:
+        return None 
+    while left != right:
+        mid = (left + right) // 2
+        if right < 0:
+            return
+        if 0 < xs[mid]:
+            right = mid
+        if 0 > xs[mid]:
+            left = mid + 1
+        if xs[mid] == 0:
+            return mid + 1
+    if xs[left] == 0:
+        return left + 1
+    if xs[left] > 0:
+        return left
+    else:
+        return None
 
 def count_repeats(xs, x):
     '''
@@ -52,7 +71,75 @@ def count_repeats(xs, x):
     >>> count_repeats([3, 2, 1], 4)
     0
     '''
+    geq_x = _binary_geq(xs, x)
+    l_x = _binary_l(xs, x)
+    if geq_x is None or l_x is None:
+        return 0
+    return l_x - geq_x
 
+def _binary_geq(xs, x):
+    '''
+    Assume that xs is a list of numbers sorted from HIGHEST to LOWEST,
+    and that x is a number.
+    This function returns the highest index of a number
+    which is greater than or equal to x. If there is no such number, 
+    the function return None 
+
+    >>> _binary_geq([5, 4, 3, 3, 3, 3, 2, 1], 3)
+    2
+    >>> _binary_geq([3, 2, 1], 4) is None
+    True
+    '''
+    left = 0
+    right = len(xs) - 1
+    if len(xs) == 0:
+        return None
+    if xs[left] == x:
+        return left
+    while left != right:
+        mid = (left + right) // 2
+        if mid == 0 or mid == len(xs) - 2:
+            left = mid + 1
+            break 
+        if x >= xs[mid]:
+            right = mid
+        if x < xs[mid]:
+            left = mid + 1
+    if xs[left] == x:
+        return left
+    return None
+
+def _binary_l(xs, x):
+    '''
+    Assume that xs is a list of numbers sorted from HIGHEST to LOWEST,
+    and that x is a number.
+    This function returns the lowest index from 0 to n of 
+    a number which is less than x. If there is no such number,
+    the function return Nonel
+ 
+    >>> _binary_l([5, 4, 3, 3, 3, 3, 2, 1], 3)
+    6
+    >>> _binary_l([3, 2, 1], 4) is None
+    True
+    '''
+    left = 0
+    right = len(xs) - 1
+    if len(xs) == 0:
+        return None 
+    if xs[right] == x:
+        return len(xs) 
+    while left != right:
+        mid = (left + right) // 2
+        if mid == 0 or mid == len(xs) - 2:
+            right = mid - 1
+            break  
+        if x > xs[mid]:
+            right = mid - 1
+        if x <= xs[mid]:
+            left = mid + 1
+    if xs[left] == x:
+        return left + 1
+    return None
 
 def argmin(f, lo, hi, epsilon=1e-3):
     '''
@@ -87,7 +174,19 @@ def argmin(f, lo, hi, epsilon=1e-3):
     >>> argmin(lambda x: (x-5)**2, -20, 0)
     -0.00016935087808430278
     '''
-
+    while (hi - lo) >= epsilon:
+        m1 = lo + (hi - lo) / 3
+        m2 = lo + (hi - lo) / 3 * 2
+        minimum = min(f(lo), f(m1), f(m2), f(hi))
+        diff_1 = abs(f(lo) - minimum)
+        diff_2 = abs(f(hi) - minimum)
+        if diff_1 > diff_2:
+            lo = m1
+        else:
+            hi = m2
+    m1 = lo + (hi - lo) / 3
+    m2 = lo + (hi - lo) / 3 * 2
+    return min(lo, m1, m2, hi)
 
 ################################################################################
 # the functions below are extra credit
@@ -109,6 +208,14 @@ def find_boundaries(f):
     else:
         you're done; return lo,hi
     '''
+    lo = -1, hi = 1
+    mid = (lo + hi) / 2
+    while f(lo) < f(mid) and f(hi) < f(mid)
+        if f(lo) < f(mid):
+            lo *= 2
+        elif f(hi) < f(mid):
+            hi *= 2
+   return lo, hi 
 
 
 def argmin_simple(f, epsilon=1e-3):
